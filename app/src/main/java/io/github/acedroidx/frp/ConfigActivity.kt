@@ -3,12 +3,11 @@ package io.github.acedroidx.frp
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 
 class ConfigActivity : AppCompatActivity() {
-    val configname = "config.ini"
+    private val configName = "config.ini"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,11 +21,11 @@ class ConfigActivity : AppCompatActivity() {
         readConfig()
     }
 
-    fun readConfig() {
+    private fun readConfig() {
         val files: Array<String> = this.fileList()
         val configEditText = findViewById<EditText>(R.id.configEditText)
-        if (files.contains(configname)) {
-            val mReader = this.openFileInput(configname).bufferedReader()
+        if (files.contains(configName)) {
+            val mReader = this.openFileInput(configName).bufferedReader()
             val mRespBuff = StringBuffer()
             val buff = CharArray(1024)
             var ch = 0
@@ -40,9 +39,9 @@ class ConfigActivity : AppCompatActivity() {
         }
     }
 
-    fun saveConfig() {
+    private fun saveConfig() {
         val configEditText = findViewById<EditText>(R.id.configEditText)
-        this.openFileOutput(configname, Context.MODE_PRIVATE).use {
+        this.openFileOutput(configName, Context.MODE_PRIVATE).use {
             it.write(configEditText.text.toString().toByteArray())
 //            Log.d("adx",configEditText.text.toString())
         }
