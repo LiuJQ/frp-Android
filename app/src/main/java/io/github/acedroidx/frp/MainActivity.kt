@@ -13,16 +13,19 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
+import kotlinx.coroutines.*
 import java.io.File
 
-
 class MainActivity : AppCompatActivity() {
-    val filename = "libfrpc.so"
-    val frpver = "0.42.0"
-    val logname = "frpc.log"
-    val configname = "config.ini"
 
-    private lateinit var state_switch: SwitchCompat
+    companion object {
+        const val filename = "libfrpc.so"
+        const val frpVer = "0.42.0"
+        const val logFilename = "frpc.log"
+        const val configFileName = "config.ini"
+    }
+
+    private lateinit var stateSwitch: SwitchCompat
 
     private lateinit var mService: ShellService
     private var mBound: Boolean = false
@@ -35,12 +38,12 @@ class MainActivity : AppCompatActivity() {
             val binder = service as ShellService.LocalBinder
             mService = binder.getService()
             mBound = true
-            state_switch.isChecked = true
+            stateSwitch.isChecked = true
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
             mBound = false
-            state_switch.isChecked = false
+            stateSwitch.isChecked = false
         }
     }
 
@@ -51,15 +54,15 @@ class MainActivity : AppCompatActivity() {
 
         val versionName = packageManager.getPackageInfo(packageName, 0).versionName
         val titleText = findViewById<TextView>(R.id.titleText)
-        titleText.text = "frp for Android - ${versionName}/${frpver}"
+        titleText.text = "frp for Android - ${versionName}/${frpVer}"
 
         checkConfig()
         createBGNotificationChannel()
 
         mBound = isServiceRunning(ShellService::class.java)
-        state_switch = findViewById<SwitchCompat>(R.id.state_switch)
-        state_switch.isChecked = mBound
-        state_switch.setOnCheckedChangeListener { buttonView, isChecked -> if (isChecked) (startShell()) else (stopShell()) }
+        stateSwitch = findViewById<SwitchCompat>(R.id.state_switch)
+        stateSwitch.isChecked = mBound
+        stateSwitch.setOnCheckedChangeListener { buttonView, isChecked -> if (isChecked) (startShell()) else (stopShell()) }
         if (mBound) {
             val intent = Intent(this, ShellService::class.java)
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
@@ -75,46 +78,58 @@ class MainActivity : AppCompatActivity() {
             //intent.putExtra("type",type+"/"+l);
             startActivity(intent)
         }
+
         val aboutButton = findViewById<Button>(R.id.aboutButton)
         aboutButton.setOnClickListener { startActivity(Intent(this, AboutActivity::class.java)) }
+
         val refreshButton = findViewById<Button>(R.id.refreshButton)
         refreshButton.setOnClickListener {
-            readLog()
+            CoroutineScope(context = Dispatchers.IO).launch {
+                readLog(this@MainActivity)
+            }
         }
         val deleteButton = findViewById<Button>(R.id.deleteButton)
         deleteButton.setOnClickListener {
-            val logfile = File(this.filesDir.toString() + "/$logname")
+            val logfile = File(this.filesDir.toString() + "/$logFilename")
             Log.d("adx", logfile.absoluteFile.toString())
             logfile.delete()
-            readLog()
-        }
-    }
-
-    fun readLog() {
-        val files: Array<String> = this.fileList()
-        val logTextView = findViewById<TextView>(R.id.logTextView)
-        if (files.contains(logname)) {
-            val mReader = this.openFileInput(logname).bufferedReader()
-            val mRespBuff = StringBuffer()
-            val buff = CharArray(1024)
-            var ch = 0
-            while (mReader.read(buff).also { ch = it } != -1) {
-                mRespBuff.append(buff, 0, ch)
+            CoroutineScope(context = Dispatchers.IO).launch {
+                readLog(this@MainActivity)
             }
-            mReader.close()
-            logTextView.text = mRespBuff.toString()
-        } else {
-            logTextView.text = "无日志"
         }
     }
 
-    fun checkConfig() {
+    private suspend fun readLog(context: Context) = coroutineScope {
+        val loadLog = async(Dispatchers.IO) {
+            val files: Array<String> = context.fileList()
+            if (files.contains(logFilename)) {
+                val mReader = context.openFileInput(logFilename).bufferedReader()
+                val mRespBuff = StringBuffer()
+                val buff = CharArray(1024)
+                var ch = 0
+                while (mReader.read(buff).also { ch = it } != -1) {
+                    mRespBuff.append(buff, 0, ch)
+                }
+                mReader.close()
+                mRespBuff.toString()
+            } else {
+                "无日志"
+            }
+        }
+        withContext(Dispatchers.Main) {
+            val logTextView = findViewById<TextView>(R.id.logTextView)
+            val logData = loadLog.await()
+            logTextView.text = logData
+        }
+    }
+
+    private fun checkConfig() {
         val files: Array<String> = this.fileList()
         Log.d("adx", files.joinToString(","))
-        if (!files.contains(configname)) {
-            val assetmanager = resources.assets
-            this.openFileOutput(configname, Context.MODE_PRIVATE).use {
-                it.write(assetmanager.open((configname)).readBytes())
+        if (!files.contains(configFileName)) {
+            val assetsManager = resources.assets
+            this.openFileOutput(configFileName, Context.MODE_PRIVATE).use {
+                it.write(assetsManager.open((configFileName)).readBytes())
             }
         }
     }
