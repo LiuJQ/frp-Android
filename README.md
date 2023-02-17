@@ -1,5 +1,8 @@
-# frp-Android
+# Description
 A frp client for Android
 一个Android的frpc客户端
-![image1.png](https://cdn.jsdelivr.net/gh/AceDroidX/frp-Android/image/image1.jpg)
-![image2.png](https://cdn.jsdelivr.net/gh/AceDroidX/frp-Android/image/image2.jpg)
+
+# Screenshots
+| Log | Config |
+| :--: | :--: |
+| <img src=https://github.com/LiuJQ/frp-Android/blob/master/image/image1.jpg width=75% /> | <img src=https://github.com/LiuJQ/frp-Android/blob/master/image/image2.jpg width=75% /> |
