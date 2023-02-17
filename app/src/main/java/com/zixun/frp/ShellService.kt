@@ -1,4 +1,4 @@
-package io.github.acedroidx.frp
+package com.zixun.frp
 
 import android.app.Notification
 import android.app.PendingIntent

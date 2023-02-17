@@ -20,7 +20,7 @@ android {
     buildToolsVersion "33.0.2"
 
     defaultConfig {
-        applicationId "io.github.acedroidx.frp"
+        applicationId "com.zixun.frp"
         minSdkVersion 23
         targetSdkVersion 32
         versionCode 3
