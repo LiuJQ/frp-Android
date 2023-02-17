@@ -1,18 +1,46 @@
 {
-  "version": 2,
+  "version": 3,
   "artifactType": {
     "type": "APK",
     "kind": "Directory"
   },
   "applicationId": "io.github.acedroidx.frp",
-  "variantName": "processReleaseResources",
+  "variantName": "release",
   "elements": [
     {
-      "type": "SINGLE",
+      "type": "UNIVERSAL",
       "filters": [],
-      "versionCode": 1,
-      "versionName": "1.0",
-      "outputFile": "app-release.apk"
+      "attributes": [],
+      "versionCode": 3,
+      "versionName": "1.0.2",
+      "outputFile": "app-universal-release.apk"
+    },
+    {
+      "type": "ONE_OF_MANY",
+      "filters": [
+        {
+          "filterType": "ABI",
+          "value": "x86_64"
+        }
+      ],
+      "attributes": [],
+      "versionCode": 3,
+      "versionName": "1.0.2",
+      "outputFile": "app-x86_64-release.apk"
+    },
+    {
+      "type": "ONE_OF_MANY",
+      "filters": [
+        {
+          "filterType": "ABI",
+          "value": "arm64-v8a"
+        }
+      ],
+      "attributes": [],
+      "versionCode": 3,
+      "versionName": "1.0.2",
+      "outputFile": "app-arm64-v8a-release.apk"
     }
-  ]
+  ],
+  "elementType": "File"
 }

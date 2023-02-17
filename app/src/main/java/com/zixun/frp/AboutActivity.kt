@@ -1,4 +1,4 @@
-package io.github.acedroidx.frp
+package com.zixun.frp
 
 import android.content.Intent
 import android.content.pm.PackageManager

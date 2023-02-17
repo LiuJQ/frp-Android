@@ -1,4 +1,4 @@
-package io.github.acedroidx.frp
+package com.zixun.frp
 
 import android.app.*
 import android.content.ComponentName
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
 
         val versionName = packageManager.getPackageInfo(packageName, 0).versionName
         val titleText = findViewById<TextView>(R.id.titleText)
-        titleText.text = "frp for Android - ${versionName}/${frpVer}"
+        titleText.text = "frp for Android - ${versionName}/$frpVer"
 
         checkConfig()
         createBGNotificationChannel()

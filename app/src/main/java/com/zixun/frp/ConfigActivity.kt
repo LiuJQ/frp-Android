@@ -1,4 +1,4 @@
-package io.github.acedroidx.frp
+package com.zixun.frp
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
